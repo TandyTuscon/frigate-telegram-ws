@@ -1,4 +1,4 @@
-# Use a Go image for building
+# Use a minimal base image with Go
 FROM golang:1.20-alpine as builder
 
 # Set environment variables
@@ -7,30 +7,23 @@ ENV CGO_ENABLED=0 GOOS=linux GOARCH=amd64
 # Set working directory
 WORKDIR /app
 
-# Install Git to pull repository
-RUN apk add --no-cache git
-
-# Clone the repository
-RUN git clone https://github.com/TandyTuscon/frigate-telegram-ws.git .
-
-# Download dependencies
-RUN go mod download
+# Copy all local files to the container
+COPY . .
 
 # Build the Go application
-RUN go build -o frigate-telegram-ws main.go
+RUN go build -o main .
 
-# Use a minimal runtime image
+# Use a minimal image for runtime
 FROM alpine:latest
 
 # Set working directory
 WORKDIR /root/
 
-# Copy the built application and configuration
-COPY --from=builder /app/frigate-telegram-ws .
-COPY --from=builder /app/config.yml .
+# Copy the built binary from the builder stage
+COPY --from=builder /app/main .
 
-# Set permissions for the binary (optional)
-RUN chmod +x ./frigate-telegram-ws
+# Copy the configuration file
+COPY config.yml .
 
-# Run the application
-CMD ["./frigate-telegram-ws"]
+# Command to run the executable
+CMD ["./main"]
