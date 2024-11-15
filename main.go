@@ -3,33 +3,35 @@ package main
 import (
 	"log"
 
-	"github.com/TandyTuscon/frigate-telegram/config"
-	"github.com/TandyTuscon/frigate-telegram/frigate"
+	"github.com/TandyTuscon/frigate-telegram-ws/config"  // Updated import path
+	"github.com/TandyTuscon/frigate-telegram-ws/frigate" // Updated import path
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 func main() {
-	// Load configuration
+	// Load configuration from config.yml
 	conf := config.LoadConfig("config.yml")
 
-	// Initialize the Telegram bot
+	// Initialize Telegram bot
 	bot, err := tgbotapi.NewBotAPI(conf.TelegramBotToken)
 	if err != nil {
-		log.Fatalf("Failed to initialize bot: %v", err)
+		log.Fatalf("Failed to initialize Telegram bot: %v", err)
 	}
 
-	// Create a channel to handle events
+	log.Printf("Authorized on account %s", bot.Self.UserName)
+
+	// Channel for processing events
 	eventChan := make(chan frigate.EventStruct, 100)
 
-	// Start listening to Frigate WebSocket
+	// Start listening to the WebSocket for Frigate events
 	go frigate.ListenWebSocket(conf, eventChan)
 
 	// Initialize and start the worker pool
 	workerPool := frigate.NewWorkerPool(10)
 	go workerPool.Start(bot, conf)
 
-	// Process events from the channel
+	// Dispatch events to the worker pool
 	for event := range eventChan {
 		workerPool.AddTask(event)
 	}
