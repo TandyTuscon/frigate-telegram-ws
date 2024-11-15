@@ -1,12 +1,15 @@
 version: "3.8"
 services:
-  frigate-telegram:
+  frigate-telegram-ws:
     build:
-      context: .
+      context: https://github.com/TandyTuscon/frigate-telegram-ws.git # GitHub repository URL
       dockerfile: Dockerfile
-    container_name: frigate-telegram
+    container_name: frigate-telegram-ws
     restart: always
-    ports:
-      - "8080:8080" # Replace with the port your app uses if applicable
     volumes:
-      - ./config.yml:/root/config.yml
+      - ./config.yml:/root/config.yml:ro # Mount config.yml as read-only
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
