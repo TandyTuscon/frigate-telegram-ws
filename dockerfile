@@ -7,10 +7,10 @@ ENV CGO_ENABLED=0 GOOS=linux GOARCH=amd64
 # Set working directory
 WORKDIR /app
 
-# Install Git to clone the repository
+# Install Git to pull repository
 RUN apk add --no-cache git
 
-# Clone the repository directly
+# Clone the repository
 RUN git clone https://github.com/TandyTuscon/frigate-telegram-ws.git .
 
 # Download dependencies
