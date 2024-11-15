@@ -1,5 +1,7 @@
 package frigate
 
+import "github.com/TandyTuscon/frigate-telegram-ws/config"
+
 func ListenWebSocket(conf *config.Config, eventChan chan EventStruct) {
 	conn, _, err := websocket.DefaultDialer.Dial(conf.FrigateWebSocketURL, nil)
 	if err != nil {
