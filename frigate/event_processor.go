@@ -13,8 +13,8 @@ import (
 	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"github.com/TandyTuscon/frigate-telegram/config"
-	"github.com/TandyTuscon/frigate-telegram/log"
+	"github.com/TandyTuscon/frigate-telegram-ws/config"
+	"github.com/TandyTuscon/frigate-telegram-ws/log"
 )
 
 // SaveThumbnail decodes and saves a snapshot image locally
