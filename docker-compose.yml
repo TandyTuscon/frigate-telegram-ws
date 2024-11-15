@@ -1,0 +1,12 @@
+version: "3.8"
+services:
+  frigate-telegram:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: frigate-telegram
+    restart: always
+    ports:
+      - "8080:8080" # Replace with the port your app uses if applicable
+    volumes:
+      - ./config.yml:/root/config.yml

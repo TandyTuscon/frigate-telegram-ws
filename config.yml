@@ -1,0 +1,252 @@
+# Environment settings for integration and initialization of the notification system
+environment:
+  TELEGRAM_BOT_TOKEN: "your-telegram-bot-token"       # Token for Telegram bot integration
+  FRIGATE_URL: "http://localhost:5000"                # Internal URL for Frigate
+  DEBUG: False                                        # Enable or disable debug mode
+  TELEGRAM_CHAT_ID: 123456789                         # Telegram chat ID for notifications
+  SLEEP_TIME: 5                                       # Interval between event checks, in seconds
+  FRIGATE_EVENT_LIMIT: 20                             # Max number of events to retrieve per cycle
+  FRIGATE_EXTERNAL_URL: "http://localhost:5000"       # External Frigate URL for notifications
+
+  # Timezone and global time format settings
+  TZ: "America/New_York"                              # Set timezone for event timestamps
+  # Available timezones for reference:
+  # - "UTC"
+  # - "America/New_York"
+  # - "America/Chicago"
+  # - "America/Denver"
+  # - "America/Los_Angeles"
+  # - "Europe/London"
+  # - "Europe/Paris"
+  # - "Europe/Berlin"
+  # - "Asia/Tokyo"
+  # - "Asia/Singapore"
+  # - "Australia/Sydney"
+  # - "Asia/Kolkata" (for India Standard Time)
+  
+  # Global time format setting for all time fields in messages
+  # Options include:
+  # - "standard": "2006-01-02 15:04:05"                  # Example: 2023-11-14 08:30:00
+  # - "day_month_12h": "02 Jan 2006 03:04 PM"            # Example: 14 Nov 2023 08:30 AM
+  # - "day_month_year_24h": "02-01-2006 15:04"           # Example: 14-11-2023 08:30
+  # - "full_weekday_12h": "Monday, Jan 2, 2006 3:04pm"   # Example: Tuesday, Nov 14, 2023 8:30am
+  # - "time_day_month_year": "15:04:05 on 02/01/2006"    # Example: 08:30:00 on 14/11/2023
+  # - "short_date": "02 Jan 06"                          # Example: 14 Nov 23
+  # - "month_day_year": "Jan 2, 2006"                    # Example: Nov 14, 2023
+  # - "time_with_timezone": "15:04:05 MST"               # Example: 08:30:00 UTC
+  # - "12h_time": "3:04 PM"                              # Example: 8:30 AM
+  # - "iso8601": "2006-01-02T15:04:05Z07:00"             # Example: 2023-11-14T08:30:00Z
+  time_format: "standard"                               # Set the global time format to be used in all time fields
+
+  REDIS_ADDR: "localhost:6379"                          # Redis server address
+  REDIS_DB: 0                                           # Redis database index
+  TIME_WAIT_SAVE: 30                                    # Wait time before saving event data, in seconds
+
+# Unified global and camera-specific filters section
+cameras:
+  # Global filters: apply to all cameras unless overridden by camera-specific configurations
+  camera:
+    - kitchen               # Include all events from the "kitchen" camera
+    - frontyard             # Include all events from the "frontyard" camera
+
+  # Global zones to include across all cameras
+  zone:
+    - door
+    - yard
+
+  # Global labels to include; applies to any camera unless overridden
+  label:
+    - person
+    - vehicle
+
+  # Global sublabels to include across all cameras
+  sublabel:
+    - Max
+    - Visitor
+
+  # Global score filter applied if no specific score setting exists for a camera
+  score:
+    min_score: 0.6          # Minimum score threshold for inclusion across all cameras
+    max_score: 1.0          # Maximum score threshold for inclusion across all cameras
+
+  # Global length filter for events across all cameras
+  length:
+    min_length: 5.0         # Include events that are at least 5 seconds in length
+    max_length: 60.0        # Exclude events longer than 60 seconds
+
+  # Global severity filter applied across all cameras unless overridden
+  severity:
+    reviewed: false         # Only include events that haven't been reviewed
+    severity: alert         # Only include events marked with an "alert" severity level
+
+  # Global media filter for event inclusion across all cameras
+  media:
+    has_snapshot: true      # Include only events that have a snapshot available
+    has_clip: true          # Include only events that have a video clip available
+    include_thumbnails: true # Include event thumbnails
+
+  # Global time-based filtering settings for events across all cameras
+  time:
+    before: 1627804800      # Only include events before this timestamp
+    after: 1627752000       # Only include events after this timestamp
+    timezone: "America/New_York" # Use this timezone for time-based filtering
+    time_range: "08:00,22:00"    # Include events only between 8 AM and 10 PM
+
+  # Camera-specific configurations allow overrides and nested conditions
+  frontyard:
+    # Specific score filter for events in the "frontyard" camera
+    score:
+      min_score: 0.8
+
+    # Zone-specific conditions for the "frontyard" camera
+    zone:
+      driveway:
+        # Label-specific filter within the "driveway" zone of "frontyard"
+        label:
+          dog:
+            sublabel:
+              - max       # Only include events labeled "dog" with sublabel "max" in driveway
+            score:
+              min_score: 0.9  # Only include "dog" label events in the driveway with a score >= 0.9
+        severity:
+          severity: significant_motion  # Include only "significant_motion" severity for driveway
+
+    # Sublabel filter for "frontyard" independent of zone or label
+    sublabel:
+      - visitor  # Include any event with sublabel "visitor" in frontyard
+
+    # Frontyard-specific time settings
+    time:
+      after: 1627752000  # Override global "after" timestamp for frontyard
+
+  # Independent settings for the "backyard" camera
+  backyard:
+    # Only include events with sublabel "raccoon" for backyard
+    sublabel:
+      - raccoon
+
+    # Only include events without snapshots for backyard
+    media:
+      has_snapshot: false
+
+    # Filter by label in backyard regardless of sublabel
+    label:
+      - animal
+
+  # Minimal configuration example for garage camera
+  garage:
+    length:
+      max_length: 45.0  # Include only events up to 45 seconds for garage camera
+    score:
+      min_score: 0.5    # Minimum score threshold for events in garage
+
+# Notification settings with placeholders and formatting options
+message:
+  # Template for the title of the message, utilizing placeholders
+  title_template: "{label} detected in the {zone} by {camera}"
+
+  # Default template for the main message body, with all available placeholders
+  body_template: |
+    **Camera:**  
+    {camera}
+
+    **Zone:**  
+    {zone}
+
+    **Label:**  
+    {label}
+
+    **SubLabel:**  
+    {sublabel}
+
+    **Score:**  
+    {score}%
+
+    **Duration:**  
+    {length} seconds
+
+    **Severity Level:**  
+    {severity}
+
+    **Start Time:**  
+    {start_time}
+
+    **End Time:**  
+    {end_time}
+
+  # Define placeholders for each field type that can be used in templates
+  fields:
+    - camera
+    - zone
+    - label
+    - sublabel
+    - score
+    - length
+    - severity
+    - start_time
+    - end_time
+    - media_snapshot
+    - media_clip
+    - time_before
+    - time_after
+    - time_timezone
+    - time_range
+
+  # Custom display names to standardize naming throughout the messages
+  display_names:
+    cameras:
+      kitchen: "Kitchen"
+      frontyard: "Front Yard"
+      backyard: "Back Yard"
+      garage: "Garage"
+    zones:
+      door: "Door"
+      yard: "Yard"
+      driveway: "Driveway Area"
+      porch: "Front Porch"
+    labels:
+      person: "Person Detected"
+      vehicle: "Vehicle Alert"
+      dog: "Dog"
+    sublabels:
+      Max: "Max (Family Pet)"
+      Visitor: "Visitor"
+      raccoon: "Raccoon"
+
+  # Condition-based custom messages with dynamic formatting options
+  custom_messages:
+    - camera: "frontyard"
+      label: "dog"
+      sublabel: "Max"
+      text: "I'm {score}% sure {sublabel} is in the {zone} by the {camera}."
+      formatting:
+        camera:
+          capitalize_first_letter: true
+          emoji: "🏠"  # Adds house emoji next to camera
+        zone:
+          capitalize_all_words: true
+        score:
+          bold: true
+
+    - zone: "driveway"
+      label: "vehicle"
+      text: "A {label} was spotted at the {zone} with a confidence level of {score}%."
+      formatting:
+        label:
+          bold: true
+          emoji: "🚗"
+        zone:
+          capitalize_first_letter: true
+        score:
+          italics: true
+
+    - camera: "backyard"
+      sublabel: "raccoon"
+      text: "Alert: {sublabel} detected at the {zone}!"
+      formatting:
+        sublabel:
+          all_caps: true
+          bold: true
+          emoji: "🦝"
+        zone:
+          capitalize_all_words: true
