@@ -3,7 +3,6 @@ package config
 import (
 	"log"
 	"os"
-	"strconv"
 	"gopkg.in/yaml.v2"
 )
 
