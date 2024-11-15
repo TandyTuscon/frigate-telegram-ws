@@ -5,7 +5,8 @@ import (
 
 	"github.com/TandyTuscon/frigate-telegram-ws/config"  // Updated import path
 	"github.com/TandyTuscon/frigate-telegram-ws/frigate" // Updated import path
-
+	"github.com/TandyTuscon/frigate-telegram-ws/log" // Updated import path
+	
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
