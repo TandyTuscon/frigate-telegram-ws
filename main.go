@@ -5,7 +5,7 @@ import (
 
 	"github.com/TandyTuscon/frigate-telegram-ws/config"  // Updated import path
 	"github.com/TandyTuscon/frigate-telegram-ws/frigate" // Updated import path
-	
+
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
@@ -28,8 +28,8 @@ func main() {
 	go frigate.ListenWebSocket(conf, eventChan)
 
 	// Initialize and start the worker pool
-	workerPool := frigate.NewWorkerPool(10)
-	go workerPool.Start(bot, conf)
+	workerPool := frigate.NewWorkerPool(conf.WorkerPoolSize)
+	go workerPool.Start(conf.WorkerPoolSize, bot, conf)
 
 	// Dispatch events to the worker pool
 	for event := range eventChan {
