@@ -2,14 +2,12 @@ package frigate
 
 import (
 	"log"
-	"bytes"
 	"encoding/base64"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
-	"text/template"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/TandyTuscon/frigate-telegram-ws/config"
@@ -108,7 +106,7 @@ func ProcessEvent(event EventStruct, bot *tgbotapi.BotAPI, conf *config.Config) 
 	// Send snapshot if available
 	if event.HasSnapshot {
 		snapshotPath := GenerateSnapshotURL(event.ID, conf)
-		photoMsg := tgbotapi.NewPhotoUpload(conf.TelegramChatID, snapshotPath)
+		photoMsg := tgbotapi.NewPhoto(conf.TelegramChatID, tgbotapi.FilePath(snapshotPath))
 		if _, err := bot.Send(photoMsg); err != nil {
 			log.Printf("Failed to send snapshot for event %s: %v", event.ID, err)
 		}
@@ -117,7 +115,7 @@ func ProcessEvent(event EventStruct, bot *tgbotapi.BotAPI, conf *config.Config) 
 	// Send video clip if available
 	if event.HasClip {
 		clipPath := GenerateClipURL(event.ID, conf)
-		videoMsg := tgbotapi.NewVideoUpload(conf.TelegramChatID, clipPath)
+		videoMsg := tgbotapi.NewVideo(conf.TelegramChatID, tgbotapi.FilePath(clipPath))
 		if _, err := bot.Send(videoMsg); err != nil {
 			log.Printf("Failed to send video clip for event %s: %v", event.ID, err)
 		}
