@@ -1,20 +1,23 @@
-# Use a minimal base image with Go
-FROM golang:1.20-alpine as builder
-FROM alpine:latest
+# Use a lightweight Go image to build the binary
+FROM golang:1.20-alpine AS builder
 
-# Set environment variables
-ENV CGO_ENABLED=0 GOOS=linux GOARCH=amd64
-
-# Set working directory
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copy all local files to the container
+# Copy the Go modules manifest files and download dependencies
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Copy the application code to the working directory
 COPY . .
 
 # Build the Go application
-RUN go build -o main .
+RUN go build -o /app/main .
 
-# Set working directory
+# Use a minimal image for runtime
+FROM alpine:latest
+
+# Set the working directory inside the runtime container
 WORKDIR /root/
 
 # Copy the built binary from the builder stage
@@ -23,5 +26,8 @@ COPY --from=builder /app/main .
 # Copy the configuration file
 COPY config.yml .
 
-# Command to run the executable
-CMD ["./main"]
+# Expose necessary ports (if any)
+# EXPOSE 8080
+
+# Set the entrypoint for the application
+ENTRYPOINT ["./main"]
