@@ -28,8 +28,5 @@ COPY --from=builder /app/main .
 # Copy the configuration file from the builder stage
 COPY --from=builder /app/config.yml .
 
-# Expose the port if needed (optional, adjust as necessary)
-EXPOSE 8080
-
 # Set the default command to run the application
 CMD ["./main"]
