@@ -11,24 +11,13 @@ type Config struct {
 	TelegramBotToken   string
 	TelegramChatID     int64
 	FrigateURL         string
-	FrigateExternalURL string `yaml:"frigate_external_url"` // Added for external Frigate URL
+	FrigateExternalURL string `yaml:"frigate_external_url"`
+	FrigateWebSocketURL string `yaml:"frigate_websocket_url"` // Add this field
 	Cameras            map[string]CameraConfig
 	MessageTemplates   MessageTemplates
-	SnapshotPath       string `yaml:"snapshot_path"`       // Added for snapshot saving path
-	ClipPath           string `yaml:"clip_path"`          // Added for clip saving path
-	TimeZone           string `yaml:"time_zone"`          // Added for event timezone
-}
-
-type CameraConfig struct {
-	Label []string `yaml:"label"`
-	Score struct {
-		MinScore float64 `yaml:"min_score"`
-	} `yaml:"score"`
-}
-
-type MessageTemplates struct {
-	TitleTemplate string `yaml:"title_template"`
-	BodyTemplate  string `yaml:"body_template"`
+	SnapshotPath       string `yaml:"snapshot_path"`
+	ClipPath           string `yaml:"clip_path"`
+	TimeZone           string `yaml:"time_zone"`
 }
 
 // LoadConfig reads and parses the configuration file
