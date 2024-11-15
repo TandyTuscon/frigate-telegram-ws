@@ -14,9 +14,6 @@ COPY . .
 # Build the Go application
 RUN go build -o main .
 
-# Use a minimal image for runtime
-FROM alpine:latest
-
 # Set working directory
 WORKDIR /root/
 
