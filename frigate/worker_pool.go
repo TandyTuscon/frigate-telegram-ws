@@ -8,6 +8,7 @@ import (
 	"github.com/TandyTuscon/frigate-telegram-ws/config"
 )
 
+// WorkerPool represents a pool of workers that process events
 type WorkerPool struct {
 	taskChan chan EventStruct
 	wg       sync.WaitGroup
@@ -39,9 +40,12 @@ func (wp *WorkerPool) worker(bot *tgbotapi.BotAPI, conf *config.Config, id int) 
 	for {
 		select {
 		case event := <-wp.taskChan:
+			// Processing the event
 			log.Printf("Worker %d processing event: %s", id, event.ID)
 			ProcessEvent(event, bot, conf)
+
 		case <-wp.stopChan:
+			// Graceful shutdown signal received
 			log.Printf("Worker %d stopping", id)
 			return
 		}
@@ -54,6 +58,7 @@ func (wp *WorkerPool) AddTask(event EventStruct) {
 	case wp.taskChan <- event:
 		log.Printf("Task added to the queue: %s", event.ID)
 	default:
+		// If the task queue is full, it logs the event and drops it
 		log.Printf("Task queue is full, dropping event: %s", event.ID)
 	}
 }
