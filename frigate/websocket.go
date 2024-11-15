@@ -9,6 +9,12 @@ import (
 	"github.com/TandyTuscon/frigate-telegram-ws/config"
 )
 
+// EventPayload defines the structure of WebSocket payloads
+type EventPayload struct {
+	Type  string      `json:"type"`
+	After EventStruct `json:"after"`
+}
+
 // ListenWebSocket connects to the Frigate WebSocket and processes events
 func ListenWebSocket(conf *config.Config, eventChan chan EventStruct) {
 	conn, _, err := websocket.DefaultDialer.Dial(conf.FrigateWebSocketURL, nil)
@@ -38,8 +44,6 @@ func ListenWebSocket(conf *config.Config, eventChan chan EventStruct) {
 			}
 			reconnectAttempts = 0
 			log.Println("Reconnected to WebSocket.")
-		} else {
-			reconnectAttempts = 0
 		}
 
 		var payload EventPayload
@@ -48,7 +52,6 @@ func ListenWebSocket(conf *config.Config, eventChan chan EventStruct) {
 			continue
 		}
 
-		// Process only new events
 		if payload.Type == "new" {
 			eventChan <- payload.After
 		}
