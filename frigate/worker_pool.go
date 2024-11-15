@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"frigate-telegram-ws/config"
+	"github.com/TandyTuscon/frigate-telegram-ws/config"
 )
 
 type WorkerPool struct {
