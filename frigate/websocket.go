@@ -6,7 +6,7 @@ import (
 
     "github.com/gorilla/websocket"
     "github.com/TandyTuscon/frigate-telegram-ws/config"
-    "github.com/TandyTuscon/frigate-telegram-ws/log"
+    "github.com/TandyTuscon/frigate-telegram-ws/frigate"
 )
 
 // ListenWebSocket connects to the Frigate WebSocket and sends new events to the event channel
