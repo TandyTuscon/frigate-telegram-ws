@@ -1,4 +1,4 @@
-module github.com/TandyTuscon/frigate-telegram
+module frigate-telegram-ws
 
 go 1.20
 
