@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 
-	"frigate-telegram-ws/config"
-	"frigate-telegram-ws/frigate"
+	"github.com/TandyTuscon/frigate-telegram-ws/config"
+    	"github.com/TandyTuscon/frigate-telegram-ws/frigate"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
