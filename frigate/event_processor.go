@@ -9,9 +9,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"strings"
 	"text/template"
-	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/TandyTuscon/frigate-telegram-ws/config"
@@ -109,8 +107,8 @@ func ProcessEvent(event EventStruct, bot *tgbotapi.BotAPI, conf *config.Config) 
 
 	// Send snapshot if available
 	if event.HasSnapshot {
-		snapshotURL := GenerateSnapshotURL(event.ID, conf)
-		photoMsg := tgbotapi.NewPhotoShare(conf.TelegramChatID, snapshotURL)
+		snapshotPath := GenerateSnapshotURL(event.ID, conf)
+		photoMsg := tgbotapi.NewPhotoUpload(conf.TelegramChatID, snapshotPath)
 		if _, err := bot.Send(photoMsg); err != nil {
 			log.Printf("Failed to send snapshot for event %s: %v", event.ID, err)
 		}
@@ -118,8 +116,8 @@ func ProcessEvent(event EventStruct, bot *tgbotapi.BotAPI, conf *config.Config) 
 
 	// Send video clip if available
 	if event.HasClip {
-		clipURL := GenerateClipURL(event.ID, conf)
-		videoMsg := tgbotapi.NewVideoShare(conf.TelegramChatID, clipURL)
+		clipPath := GenerateClipURL(event.ID, conf)
+		videoMsg := tgbotapi.NewVideoUpload(conf.TelegramChatID, clipPath)
 		if _, err := bot.Send(videoMsg); err != nil {
 			log.Printf("Failed to send video clip for event %s: %v", event.ID, err)
 		}
