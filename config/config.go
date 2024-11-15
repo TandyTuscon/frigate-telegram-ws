@@ -7,12 +7,16 @@ import (
 )
 
 type Config struct {
-	Debug            bool
-	TelegramBotToken string
-	TelegramChatID   int64
-	FrigateURL       string
-	Cameras          map[string]CameraConfig
-	MessageTemplates MessageTemplates
+	Debug              bool
+	TelegramBotToken   string
+	TelegramChatID     int64
+	FrigateURL         string
+	FrigateExternalURL string `yaml:"frigate_external_url"` // Added for external Frigate URL
+	Cameras            map[string]CameraConfig
+	MessageTemplates   MessageTemplates
+	SnapshotPath       string `yaml:"snapshot_path"`       // Added for snapshot saving path
+	ClipPath           string `yaml:"clip_path"`          // Added for clip saving path
+	TimeZone           string `yaml:"time_zone"`          // Added for event timezone
 }
 
 type CameraConfig struct {
@@ -27,6 +31,7 @@ type MessageTemplates struct {
 	BodyTemplate  string `yaml:"body_template"`
 }
 
+// LoadConfig reads and parses the configuration file
 func LoadConfig(path string) *Config {
 	file, err := os.Open(path)
 	if err != nil {
