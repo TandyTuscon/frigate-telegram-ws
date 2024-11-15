@@ -14,7 +14,7 @@ import (
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/TandyTuscon/frigate-telegram-ws/config"
-	"github.com/TandyTuscon/frigate-telegram-ws/log"
+	"github.com/TandyTuscon/frigate-telegram-ws/frigate"
 )
 
 // SaveThumbnail decodes and saves a snapshot image locally
