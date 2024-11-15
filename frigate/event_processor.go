@@ -24,13 +24,13 @@ func SaveThumbnail(eventID string, thumbnail string, conf *config.Config) string
     data, err := base64.StdEncoding.DecodeString(thumbnail)
     if err != nil {
 		log.Printf("Error: %v", err)
-        log.Error.Printf("Failed to decode thumbnail for event %s: %v", eventID, err)
+        log.Printf("Failed to decode thumbnail for event %s: %v", eventID, err)
         return ""
     }
 
     filePath := filepath.Join(os.TempDir(), fmt.Sprintf("%s.jpg", eventID))
     if err := os.WriteFile(filePath, data, 0644); err != nil {
-        log.Error.Printf("Failed to save thumbnail for event %s: %v", eventID, err)
+        log.Printf("Failed to save thumbnail for event %s: %v", eventID, err)
         return ""
     }
 
