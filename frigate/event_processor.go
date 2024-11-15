@@ -1,41 +1,36 @@
+
 package frigate
 
 import (
+	"log"
     "bytes"
     "encoding/base64"
     "fmt"
     "io"
-    "log"
     "net/http"
     "os"
     "path/filepath"
+    "strings"
     "text/template"
-    "github.com/TandyTuscon/frigate-telegram-ws/config"
-    tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-)
+    "time"
 
-// EventStruct defines the event data
-type EventStruct struct {
-    ID           string  `json:"id"`
-    Camera       string  `json:"camera"`
-    Label        string  `json:"label"`
-    Score        float64 `json:"score"`
-    HasClip      bool    `json:"has_clip"`
-    HasSnapshot  bool    `json:"has_snapshot"`
-    // Add other fields as needed
-}
+    tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+    "frigate-telegram-ws/config"
+    "frigate-telegram-ws/log"
+)
 
 // SaveThumbnail decodes and saves a snapshot image locally
 func SaveThumbnail(eventID string, thumbnail string, conf *config.Config) string {
     data, err := base64.StdEncoding.DecodeString(thumbnail)
     if err != nil {
-        log.Printf("Failed to decode thumbnail for event %s: %v", eventID, err)
+		log.Printf("Error: %v", err)
+        log.Error.Printf("Failed to decode thumbnail for event %s: %v", eventID, err)
         return ""
     }
 
     filePath := filepath.Join(os.TempDir(), fmt.Sprintf("%s.jpg", eventID))
     if err := os.WriteFile(filePath, data, 0644); err != nil {
-        log.Printf("Failed to save thumbnail for event %s: %v", eventID, err)
+        log.Error.Printf("Failed to save thumbnail for event %s: %v", eventID, err)
         return ""
     }
 
@@ -49,37 +44,37 @@ func SaveClip(eventID string, conf *config.Config) string {
 
     resp, err := http.Get(url)
     if err != nil {
-        log.Printf("Failed to download clip for event %s: %v", eventID, err)
+		log.Printf("Error: %v", err)
+        log.Error.Printf("Failed to download clip for event %s: %v", eventID, err)
         return ""
     }
     defer resp.Body.Close()
 
     file, err := os.Create(filePath)
     if err != nil {
-        log.Printf("Failed to save clip for event %s: %v", eventID, err)
+		log.Printf("Error: %v", err)
+        log.Error.Printf("Failed to save clip for event %s: %v", eventID, err)
         return ""
     }
     defer file.Close()
 
     if _, err := io.Copy(file, resp.Body); err != nil {
-        log.Printf("Failed to write clip for event %s: %v", eventID, err)
+        log.Error.Printf("Failed to write clip for event %s: %v", eventID, err)
         return ""
     }
 
     return filePath
 }
 
-// GenerateSnapshotURL
+// URL generation for snapshots, clips, and events
 func GenerateSnapshotURL(eventID string, conf *config.Config) string {
     return fmt.Sprintf("%s/api/events/%s/snapshot.jpg", conf.FrigateExternalURL, eventID)
 }
 
-// GenerateClipURL
 func GenerateClipURL(eventID string, conf *config.Config) string {
     return fmt.Sprintf("%s/api/events/%s/clip.mp4", conf.FrigateExternalURL, eventID)
 }
 
-// GenerateEventURL
 func GenerateEventURL(camera, label, zone string, conf *config.Config) string {
     return fmt.Sprintf("%s/events?cameras=%s&labels=%s&zones=%s", conf.FrigateExternalURL, camera, label, zone)
 }
@@ -99,8 +94,8 @@ func ProcessEvent(event EventStruct, bot *tgbotapi.BotAPI, conf *config.Config) 
     }
 
     // Filter by score
-    if event.Score < cameraConfig.Score.MinScore {
-        log.Printf("Skipping event with low confidence: %f", event.Score)
+    if event.Data.TopScore < cameraConfig.Score.MinScore {
+        log.Printf("Skipping event with low confidence: %f", event.Data.TopScore)
         return
     }
 
