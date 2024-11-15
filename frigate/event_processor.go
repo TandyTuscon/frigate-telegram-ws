@@ -45,7 +45,7 @@ func SaveClip(eventID string, conf *config.Config) string {
     resp, err := http.Get(url)
     if err != nil {
 		log.Printf("Error: %v", err)
-        log.Error.Printf("Failed to download clip for event %s: %v", eventID, err)
+        log.Error("Failed to download clip for event %s: %v", eventID, err)
         return ""
     }
     defer resp.Body.Close()
@@ -53,13 +53,13 @@ func SaveClip(eventID string, conf *config.Config) string {
     file, err := os.Create(filePath)
     if err != nil {
 		log.Printf("Error: %v", err)
-        log.Error.Printf("Failed to save clip for event %s: %v", eventID, err)
+        log.Printf("Failed to save clip for event %s: %v", eventID, err)
         return ""
     }
     defer file.Close()
 
     if _, err := io.Copy(file, resp.Body); err != nil {
-        log.Error.Printf("Failed to write clip for event %s: %v", eventID, err)
+        log.Printf("Failed to write clip for event %s: %v", eventID, err)
         return ""
     }
 
