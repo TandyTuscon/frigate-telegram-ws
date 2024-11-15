@@ -45,7 +45,7 @@ func SaveClip(eventID string, conf *config.Config) string {
     resp, err := http.Get(url)
     if err != nil {
 		log.Printf("Error: %v", err)
-        log.Error("Failed to download clip for event %s: %v", eventID, err)
+        log.Printf("Failed to download clip for event %s: %v", eventID, err)
         return ""
     }
     defer resp.Body.Close()
