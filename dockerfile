@@ -1,5 +1,6 @@
 # Use a minimal base image with Go
 FROM golang:1.20-alpine as builder
+FROM alpine:latest
 
 # Set environment variables
 ENV CGO_ENABLED=0 GOOS=linux GOARCH=amd64
