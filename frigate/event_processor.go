@@ -19,6 +19,10 @@ import (
 
 )
 
+func generateMessage(event EventStruct, conf *config.Config) string {
+    return fmt.Sprintf("Event: %s detected on camera: %s", event.Label, event.Camera)
+}
+
 // SaveThumbnail decodes and saves a snapshot image locally
 func SaveThumbnail(eventID string, thumbnail string, conf *config.Config) string {
     data, err := base64.StdEncoding.DecodeString(thumbnail)
